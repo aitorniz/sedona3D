@@ -1,23 +1,37 @@
-# FROM drjiayu/sedona-jupyterlab:latest
-FROM almalinux:latest
+FROM alpine:latest
 
-WORKDIR /opt/workspace/sedona3D
+WORKDIR /opt/workspace/penduick/
 
-RUN apt-get update && apt-get install -y nano git vim --assume-yes
+# install necessary tools
 
-RUN apt-get update \
-    && apt-get install apt-transport-https curl gnupg -yqq \
-    && echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list \
-    && echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list \
-    && curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" | gpg --no-default-keyring --keyring gnupg-ring:/etc/apt/trusted.gpg.d/scalasbt-release.gpg --import \
-    && chmod 644 /etc/apt/trusted.gpg.d/scalasbt-release.gpg \
-    && apt-get update \
-    && apt-get install sbt \
-    && wget "https://dlcdn.apache.org/spark/spark-3.5.1/spark-3.5.1-bin-hadoop3.tgz" tar -xf spark-3.5.1-bin-hadoop3
+RUN apk update && apk add --no-cache \
+        nano \
+        git \
+        vim \
+        curl \
+        wget \
+        tar \
+        gzip \
 
-ENV SPARK_HOME="/opt/workspace/spark-3.5.1-bin-hadoop3"
-ENV PATH = $PATH!$SPARK_HOME/bin
-ENV PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python
+# install sbt
+RUN sudo rm -f /etc/yum.repos.d/bintray-rpm.repo || true \
+    curl -L https://www.scala-sbt.org/sbt-rpm.repo > sbt-rpm.repo \
+    sudo mv sbt-rpm.repo /etc/yum.repos.d/ \
+    sudo yum install sbt \
 
-COPY . ./
+# put spark in a more general directory
+WORKDIR /opt/workspace/
 
+# install spark
+RUN wget "https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz" && tar -xf spark-3.4.3-bin-hadoop3
+
+# set up some environments
+ENV SPARK_HOME="/opt/workspace/"
+ENV PATH=$PATH:$SPARK_HOME/bin
+ENV PYTHONPATH=$PATH:$SPARK_HOME/Python
+
+#Copy all files into the container
+COPY .  /workspace
+
+#Set the defaut command for running scala
+CMD ["sbt", "run"]
