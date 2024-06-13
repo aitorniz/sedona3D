@@ -97,4 +97,13 @@ And nothing running `docker ps`:
 Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
 CONTAINER ID  IMAGE       COMMAND     CREATED     STATUS      PORTS       NAMES
 ```
-
+## Now we have to deploy this image inside a container to start working on Sedona
+For that, run the following command:
+```
+docker run
+```
+### What's the difference between `docker run` and `docker exec` ?
+While `docker run` creates a new container by specifying the image, options and other
+parameters, `docker exec` makes you able to execute a command inside and existing
+docker container. Secund command is useful to modify things in container without
+killing them.

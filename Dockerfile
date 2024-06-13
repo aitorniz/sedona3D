@@ -24,7 +24,7 @@ WORKDIR /opt/workspace/
 # install spark
 RUN wget "https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz" && tar -xvf spark-3.4.3-bin-hadoop3.tgz
 
-WORKDIR /opt/workspace
+WORKDIR /opt/workspace/
 
 # set up some environments
 ENV SPARK_HOME="/opt/workspace/"
@@ -32,7 +32,7 @@ ENV PATH=$PATH:$SPARK_HOME/bin
 ENV PYTHONPATH=$PATH:$SPARK_HOME/Python
 
 #Copy all files into the container
-COPY .  /workspace
+COPY .  workspace/
 
 #Set the defaut command for running scala
 CMD ["sbt", "run"]
