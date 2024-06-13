@@ -21,9 +21,10 @@ RUN sudo rm -f /etc/yum.repos.d/bintray-rpm.repo || true \
 
 # put spark in a more general directory
 WORKDIR /opt/workspace/
-
 # install spark
-RUN wget "https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz" tar -xf spark-3.4.3-bin-hadoop3
+RUN wget "https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz" && tar -xvf spark-3.4.3-bin-hadoop3.tgz
+
+WORKDIR /opt/workspace
 
 # set up some environments
 ENV SPARK_HOME="/opt/workspace/"
