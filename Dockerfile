@@ -28,8 +28,8 @@ WORKDIR /opt/workspace/
 
 # set up some environments
 ENV SPARK_HOME="/opt/workspace/"
-ENV PATH=$PATH:$SPARK_HOME/bin
-ENV PYTHONPATH=$PATH:$SPARK_HOME/Python
+ENV PATH=$PATH:$SPARK_HOME/bin/
+ENV PYTHONPATH=$PYTHONPATH:$SPARK_HOME/Python
 
 #Copy all files into the container
 COPY .  workspace/
