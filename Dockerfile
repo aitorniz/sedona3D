@@ -1,39 +1,40 @@
-FROM alpine:latest
+FROM ubuntu:22.04
 
-WORKDIR /opt/workspace/penduick/
+ENV HOME /root
 
-# install necessary tools
+WORKDIR $HOME/projects/boussole/
 
-RUN apk update && apk add --no-cache \
-	nano \
+RUN apt-get update && apt-get install -y \
 	git \
 	vim \
-        curl \
-        wget \
-        tar \
-        gzip \
+	curl \
+	gnupg1\
+	wget \
+	tar \
+	openjdk-8-jre-headless\
+	maven
+	
 
-# install sbt
-RUN sudo rm -f /etc/yum.repos.d/bintray-rpm.repo || true \
-    curl -L https://www.scala-sbt.org/sbt-rpm.repo > sbt-rpm.repo \
-    sudo mv sbt-rpm.repo /etc/yum.repos.d/ \
-    sudo yum install sbt \
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian all main" | tee /etc/apt/sources.list.d/sbt.list
+RUN echo "deb https://repo.scala-sbt.org/scalasbt/debian /" | tee /etc/apt/sources.list.d/sbt_old.list
+RUN curl -sL "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x2EE0EA64E40A89B84B2DF73499E82A75642AC823" |  apt-key add
+RUN apt-get update && apt-get install sbt
 
-# put spark in a more general directory
-WORKDIR /opt/workspace/
 # install spark
-RUN wget "https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz" && tar -xvf spark-3.4.3-bin-hadoop3.tgz
+RUN wget "https://dlcdn.apache.org/spark/spark-3.4.3/spark-3.4.3-bin-hadoop3.tgz" && tar -xf spark-3.4.3-bin-hadoop3.tgz
 
-WORKDIR /opt/workspace/
+# install jdk
+RUN wget "https://download.oracle.com/java/22/latest/jdk-22_linux-aarch64_bin.tar.gz" && tar -xf jdk-22_linux-aarch64_bin.tar.gz
 
-# set up some environments
-ENV SPARK_HOME="/opt/workspace/"
-ENV PATH=$PATH:$SPARK_HOME/bin/
-ENV PYTHONPATH=$PYTHONPATH:$SPARK_HOME/Python
+# install maven
+RUN wget "https://dlcdn.apache.org/maven/maven-3/3.9.8/binaries/apache-maven-3.9.8-bin.tar.gz" && tar -xf apache-maven-3.9.8-bin.tar.gz \
+    && rm -f /tmp/apache-maven.tar.gz
 
-#Copy all files into the container
-COPY .  workspace/
+# set up environments
+ENV MAVEN_HOME=$HOME/projects/boussole/apache-maven-3.9.8-bin
 
-#Set the defaut command for running scala
-CMD ["sbt", "run"]
+ENV SPARK_HOME=$HOME/projects/boussole/spark-3.4.3-bin-hadoop3
+ENV PATH=$PATH:$SPARK_HOME
+ENV PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python
+
 
