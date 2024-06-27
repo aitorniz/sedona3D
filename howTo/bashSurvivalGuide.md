@@ -23,3 +23,13 @@ For example, you can run:
 ```
 tracepath ipAdressOfYourRemoteServer
 ```
+# How to compress files with `tar`
+You can use the following where:
+-c: Create an archive.
+-z: Compress the archive with gzip.
+-v: Display progress in the terminal while creating the archive, also known as "verbose" mode. The v is always optional in these commands, but it's helpful.
+-f: Allows you to specify the filename of the archive.
+```
+tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
+```
+
