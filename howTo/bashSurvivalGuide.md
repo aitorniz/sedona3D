@@ -1,6 +1,6 @@
 # How to get informations about the size of files
 ## Using the classic `ls`
-RUn the following:
+Run the following:
 ```
 ls -al
 ```
@@ -14,4 +14,12 @@ du --time -c -hs you_directory
 You can also run the following in order to get many informations, among what, the size:
 ```
 file fileName
+```
+
+# How to get the path of a request
+In order to k now by which places your
+request go through, you can use tracepath.
+For example, you can run:
+```
+tracepath ipAdressOfYourRemoteServer
 ```
