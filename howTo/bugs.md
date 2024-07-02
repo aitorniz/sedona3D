@@ -47,3 +47,10 @@ I got and error of size because I tryed to also push the fat jar of sedona's exa
 When 
 In fact, I tryed many ways to fix the problem. Firstly, I compress it
 
+# How to modify Sedona
+## How to modify what you need to modify
+Like "Le Petit poucet", a classic french tail, you have to yield little rocks.
+In the code, you must identify function that seem to be related to what you want
+to change. Then, double click on them to go to the file where the function is defined and so on.
+After identifying the block of code who makes what you want to change, you could
+modify it, compile and run your code until the next bug.
