@@ -67,3 +67,12 @@ mvn clean package -DskipTests
 ```
 And after that, the Sedona code will modified so I can use it in one home made example
 to see if I can open an `.csv` of XYZ coordinates.
+
+In many steps:
+1/ use `cp` to copy and paste `Point3DFormatMapper.java` and `GeometryType3D.java`into `enums
+thanks to:
+```
+cp absolute/path/to/GeometryType3D.java absolute/path/to/sedona/source/code/git/clone
+cp absolute/path/to/Point3DFormat3D.java absolute/path/to/sedona/source/code/git/clone
+```
+2/
