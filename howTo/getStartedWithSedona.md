@@ -33,6 +33,12 @@ SpatialRDD.java file and more precisely
 line 234.
 
 ## Modify geometry point
+### Where I am?
+I'm in
+```
+sedona/spark/common/src/main/java/org/apache/sedona/core/formatMapper/PointFormatMapper.java
+```
+at the end of the document. Now I go to `Functions.java` where GeometryType is defined.
 ###How does it work ?
 SpatialRDD is bascily compound of three operations:
 1/spark.textFIle which read the WKT format file,
@@ -44,3 +50,20 @@ build objects based on what FormatMapper did.
 Modify GeometryType, either by adding a Point3D class and recompiling it
 or if POINT3D exists in Java, just make an heritage in the POINT part.
 
+In facts, the class GeometryType inherites from Java native Geometry class. 
+In the case of Points, it precisely concern the `Point3D.java` file in
+the [Java Geometry repo](https://github.com/dlegland/javaGeom/blob/master/src/main/java/net/javageom/geom3d/Point3D.java).
+
+That's why we're making a heritage from `GeometryType` and `PointFormatMapper` in order
+to modify this 3D aspect by calling `javaGeom` POINT3D. After that, an example -qube
+in our case- will call these two modified classes: `GeometryType3D` and `Point3DFormatMapper`.
+The aim is to read a csv file which contains an X, a Y and a Z.
+
+I have to go trhough the git-clone I made of Sedona's git-hub repo. There, I copy and paste
+the modified class I created (`Point3DFormatMapper.java` and `GeometryType3D.java`).
+I re-compile Sedona by running into a terminal opened in this directory a
+```
+mvn clean package -DskipTests
+```
+And after that, the Sedona code will modified so I can use it in one home made example
+to see if I can open an `.csv` of XYZ coordinates.
