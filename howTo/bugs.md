@@ -54,3 +54,114 @@ In the code, you must identify function that seem to be related to what you want
 to change. Then, double click on them to go to the file where the function is defined and so on.
 After identifying the block of code who makes what you want to change, you could
 modify it, compile and run your code until the next bug.
+
+## Running modifyied examples
+### Check if normal example runs
+When I source my `spark-submit`, I got the following:
+```
+bash: /home/aitor/spark-3.4.3-bin-hadoop3/bin/spark-submit: No such file or directory
+```
+
+## Error compiling a modified version of Sedona
+After copy and paste modified version of two files into Sedona source code and
+running the following command in the highest directory:
+```
+mvn clean package -DskipTests
+```
+I got the following error:
+```
+ Compilation failure: 
+[ERROR] /home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/GeometryType3D.java:[1,43] ';' expected
+[ERROR] /home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/GeometryType3D.java:[3,27] '{' expected
+[ERROR] /home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/GeometryType3D.java:[3,28] ',', '}', or ';' expected
+```
+Then I add the necessary symbols. Note that `enums` seems to work better with `implements` than `extends`.
+
+Therefore, I got the following:
+```
+Compilation failure: 
+[ERROR] /home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums
+/GeometryType3D.java:[1,30] package org.apache.sedona.core does not exist
+[ERROR] /home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/
+GeometryType3D.java:[3,39] cannot find symbol
+[ERROR]   symbol: class GeometryType
+```
+Ahah, I modified the path by adding the good path into Sedona repo and got the following:
+```i
+Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.10.1:compile (default-compile) on project sedona-common:
+ Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/
+GeometryType3D.java:[3,39] interface expected here
+```
+So I deleted GeometryType3D.java in order to directly add a `POINT3D` imported from JavaGeom into `GeometryType.java`
+and I got the following:
+```
+/home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/
+GeometryType.java:[22,40] package org.locationtech.jts.geom.geom3d does not exist
+```
+Therefore, I modify the path by deleting `geom3d` and I got the following error:
+```
+/home/aitor/projects/sedonaCodeSource/common/src/main/java/org/apache/sedona/common/enums/
+GeometryType.java:[22,33] cannot find symbol
+[ERROR]   symbol:   class Point3D
+[ERROR]   location: package org.locationtech.jts.geom
+```
+So I changed Point3D class for `Geometry` and it seems to work.
+After that, I got the following error:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:3: error: `;' expected but `import' found.
+```
+Then I got:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:10: error: `}' expected but eof found.
+```
+After correcting that, the following error was raised:
+```
+Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[5,16] invalid method declaration; return type required
+```
+Then I try to delete `@override` because it seems like it is not a method but I got this:
+```
+ Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[4,16] invalid method declaration; return type required
+```
+There was a `3D` missing in the constructor name in order to have the same name than the class name. After that:
+```
+Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.10.1:
+compile (default-compile) on project sedona-spark-common-3.0_2.12: Compilation failure: Compilation failure: 
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[6,57] cannot find symbol
+[ERROR]   symbol:   class FileDataSplitter
+[ERROR]   location: class org.apache.sedona.core.formatMapper3D.Point3DFormatMapper
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[7,75] cannot find symbol
+[ERROR]   symbol:   variable GeometryType
+[ERROR]   location: class org.apache.sedona.core.formatMapper3D.Point3DFormatMapper
+```
+After adding the right import for FileDataSplitter I got:
+```
+Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[8,75] cannot find symbol
+[ERROR]   symbol:   variable GeometryType
+[ERROR]   location: class org.apache.sedona.core.formatMapper3D.Point3DFormatMapper
+```
+So after giving the good import into GeometryType, I got:
+```
+Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[8,13] no suitable constructor found for 
+PointFormatMapper(java.lang.Integer,int,org.apache.sedona.common.enums.FileDataSplitter,
+boolean,org.apache.sedona.common.enums.GeometryType)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.
+PointFormatMapper(org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.
+PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+
+```
