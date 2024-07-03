@@ -76,3 +76,16 @@ cp absolute/path/to/GeometryType3D.java absolute/path/to/sedona/source/code/git/
 cp absolute/path/to/Point3DFormat3D.java absolute/path/to/sedona/source/code/git/clone
 ```
 2/
+```
+package org.apache.sedona.core.formatMapper3D;
+
+import org.apache.sedona.core.formatMapper.PointFormatMapper;
+import org.apache.sedona.common.enums.FileDataSplitter;
+import org.apache.sedona.common.enums.GeometryType;
+public class Point3DFormatMapper extends PointFormatMapper{
+        public Point3DFormatMapper(Integer startOffset, FileDataSplitter Splitter, boolean carryInputData) {
+            super(startOffset, startOffset + 1, Splitter, carryInputData, GeometryType.POINT3D);
+
+        }
+}
+```
