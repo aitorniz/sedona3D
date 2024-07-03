@@ -24,4 +24,23 @@ In fact, you should rather go to:
 ```
 sedona/common/src/main/java/org/apache/sedona/common/utils/FormatUtils.java
 ```
-Then, I look for the splitter.
+Then, I look for the splitter
+
+## Adding OctTree
+In order to add and OctTree option, we may modify
+SpatialRDD.java file and more precisely
+`calc_partitioner` method by adding an OctTree option at
+line 234.
+
+## Modify geometry point
+###How does it work ?
+SpatialRDD is bascily compound of three operations:
+1/spark.textFIle which read the WKT format file,
+2/FormatMapper which takes in account the binary result
+of 1/ and build many partitions of the fist document
+3/ Geometry which precises the data type in order to
+build objects based on what FormatMapper did.
+### What have I to do?
+Modify GeometryType, either by adding a Point3D class and recompiling it
+or if POINT3D exists in Java, just make an heritage in the POINT part.
+
