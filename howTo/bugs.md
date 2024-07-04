@@ -233,7 +233,24 @@ PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplit
 ```
 The constructor of PointFormatMapper has only 2 arguments unlike FormatMapper's constructor which has 4. In our case, we inherite
 PointFormatMapper into `Point3DFormatMapper` file. That's why we only have to specify two parameters: Splitter and CarryInputData.
+So I changed the class code like this:
+```
+//make a package of this class in order
+//to export and import it easier
 
+package org.apache.sedona.core.formatMapper3D;
+
+import org.apache.sedona.core.formatMapper.PointFormatMapper;
+import org.apache.sedona.common.enums.FileDataSplitter;
+import org.apache.sedona.common.enums.GeometryType;
+
+public class Point3DFormatMapper extends PointFormatMapper{
+        public Point3DFormatMapper(Integer startOffset, FileDataSplitter Splitter, boolean carryInputData) {
+            super(Splitter, carryInputData);
+
+        }
+}
+```
 ##Test these basic modified geometries
 In order to test them, I made few hypothesis. One of them was to install the modified version of Sedona in my computer.
 Thanks to this, the example will probably call it. But how I could do that?
