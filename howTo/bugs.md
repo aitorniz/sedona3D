@@ -165,3 +165,76 @@ PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplit
 [ERROR]       (actual and formal argument lists differ in length)
 
 ```
+Next day, I got the following:
+```
+Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[8,13] no suitable constructor found for 
+PointFormatMapper(java.lang.Integer,int,org.apache.sedona.common.enums.FileDataSplitter,boolean,org.apache.sedona.common.enums.GeometryType)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.
+PointFormatMapper(org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.
+PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+```
+
+In facts, the repo I forked is too much old in comparison with the actual. SO I made a `git clone` of the actual version
+and tried to compile it but it didn't work. I got the following:
+```
+Failed to execute goal org.apache.maven.plugins:maven-javadoc-plugin:2.10.4:jar
+ (attach-javadocs) on project sedona-common: MavenReportException:
+Error while generating Javadoc: Unable to find javadoc command: 
+The environment variable JAVA_HOME is not correctly set. 
+```
+
+Then, I have many problems. First of all, the GeometryType.java file isn't the same than the original Sedona repo one.
+Also, I tried to git clone again the original Sedona repo, run it and got an error message which said
+that is a compiler without. So I retry to fix the problem of Point3DFormatMapper which hasn't constructor.
+Then I git the following:
+```
+Failed to execute goal org.apache.maven.plugins:maven-clean-plugin:3.1.0:clean (default-clean) 
+on project sedona-parent: Failed to clean project:Failed to delete /home/aitor/projects/sedonaCodeSource/target/resolved-pom.xml 
+```
+So this was an error of rights. You can check your rights on `resolved-pom.xml` by running:
+```
+cd /home/aitor/projects/sedonaCodeSource/target/
+ls -lth
+```
+where -lth will give you a result like this:
+```
+-rw-r--r-- 1 root root  32K juil.  4 10:16 resolved-pom.xml
+```
+As you can read, rights are off for this file. So you can turn on sudo rights all the Sedona cloned repo with:
+```
+sudo chown -R user:user path/to/sedona
+```
+### Kind of half-debrief
+[a very clear schema](https://excalidraw.com/#json=-5neyDrMFmMc-tVTE2CzA,WgJkZ0gLG66_vc99K1H5Cw)
+### bugs still there
+
+## Compile the basic modication on Points
+Then I compile it after removing all modifications to test if the repo itself works
+### Adding POINT3D in `GeometryType`: OK
+After adding POINT3D in `GeometryType` it compiles without failure
+### Adding Point3DFormatMapper.java: not OK
+I got the following:
+```
+Compilation failure
+[ERROR] /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/formatMapper/
+Point3DFormatMapper.java:[11,13] no suitable constructor found for 
+PointFormatMapper(java.lang.Integer,int,org.apache.sedona.common.enums.FileDataSplitter,boolean,org.apache.sedona.common.enums.GeometryType)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.
+PointFormatMapper(org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.
+PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+```
+The constructor of PointFormatMapper has only 2 arguments unlike FormatMapper's constructor which has 4. In our case, we inherite
+PointFormatMapper into `Point3DFormatMapper` file. That's why we only have to specify two parameters: Splitter and CarryInputData.
+
+##Test these basic modified geometries
+In order to test them, I made few hypothesis. One of them was to install the modified version of Sedona in my computer.
+Thanks to this, the example will probably call it. But how I could do that?
+```
