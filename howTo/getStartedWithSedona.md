@@ -89,3 +89,10 @@ public class Point3DFormatMapper extends PointFormatMapper{
         }
 }
 ```
+
+# Try to make 3D inside an example using heritage
+It seems like it could be easier to directly make the changes inside the example code using heritage. At least, it would be easier than inside the source code.
+```
+
+```
+
