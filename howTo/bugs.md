@@ -255,3 +255,24 @@ public class Point3DFormatMapper extends PointFormatMapper{
 In order to test them, I made few hypothesis. One of them was to install the modified version of Sedona in my computer.
 Thanks to this, the example will probably call it. But how I could do that?
 ```
+
+
+## Unable to clean class directory
+After writting a basic code to inherite sedona, modify it and test it, I got the following error:
+```
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-clean-plugin:2.5:clean (default-clean) on project sedona-spark-example: 
+Failed to clean project: 
+Failed to delete /home/aitor/projects/sedona3D/examples/qube/target/classes
+```
+Knowing that the `classes` folder is empty into `qube` example.
+Nota bene: don't hesitate to use:
+```
+mvn clean package **-e** **-X**-DskipTests
+```
+In order to get the full trace of error
+
+You must delete by yourself the classes located at `classes` using:
+```
+sudo rm -rf path/to/classes
+```
+In my case after that it works and show me my code's bugs
