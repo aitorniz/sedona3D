@@ -276,3 +276,39 @@ You must delete by yourself the classes located at `classes` using:
 sudo rm -rf path/to/classes
 ```
 In my case after that it works and show me my code's bugs
+
+## Import errors:
+```
+/home/aitor/projects/sedona3D/common/src/main/scala/Main.scala:6: error: object textFile is not a member of package org.apache.spark
+[ERROR] import org.apache.spark.textFile
+[ERROR]        ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Main.scala:8: error: not found: object GeometryType3D
+[ERROR] import GeometryType3D._
+[ERROR]        ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Main.scala:9: error: not found: object Point3DFormatMapper
+[ERROR] import Point3DFormatMapper._
+[ERROR]        ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Main.scala:21: error: not found: value Point3DRDD
+[ERROR]   Point3DRDD()
+[ERROR]   ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3D.scala:1: error: object enum is not a member of package org.apache.sedona.core
+[ERROR] import org.apache.sedona.core.enum.spatialRDD;
+[ERROR]                               ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3D.scala:2: error: object Geometry is not a member of package org.apache.sedona.core
+[ERROR] import org.apache.sedona.core.Geometry;
+[ERROR]        ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3D.scala:3: error: object TextFile is not a member of package org.apache.sedona
+[ERROR] import org.apache.sedona.TextFile;
+[ERROR]        ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3D.scala:9: error: not found: value spark
+[ERROR]   val Point3Dcsv = spark.read.TextFile("./data/testCSV3D.csv")
+[ERROR]                    ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3D.scala:11: error: not found: value point3DFormatMapper
+[ERROR]   val Point3D = point3DFormatMapper(Point3Dcsv)
+```
+Then, I modified some imports removing any unnecessary thing and after creating a Spark session, I got this:
+```
+[ERROR]   /workspace/src/main/scala/Point3DRDD.scala:19: error: value option is not a member of org.apache.spark.sql.DataFrame
+[ERROR]   val Point3Dcsv = spark.read.csv("./data/testCSV3D.csv").option("lineSep", ",")
+```
+The problem was you need to create a Spark context. After that use it in the Main. At the end, it works. 
