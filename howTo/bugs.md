@@ -311,4 +311,58 @@ Then, I modified some imports removing any unnecessary thing and after creating 
 [ERROR]   /workspace/src/main/scala/Point3DRDD.scala:19: error: value option is not a member of org.apache.spark.sql.DataFrame
 [ERROR]   val Point3Dcsv = spark.read.csv("./data/testCSV3D.csv").option("lineSep", ",")
 ```
-The problem was you need to create a Spark context. After that use it in the Main. At the end, it works. 
+The problem was you need to create a Spark context. After that use it in the Main. At the end, it works.
+
+## My `mvn clean package` don't take the good directory
+My command create a jar based on the pom.xml i copied from spark-example 
+You must change the name of the artefactID inside the .xml and put the name
+of your current example
+
+## Import problems with my home made example
+While importing classes I created to make 3D RDD, I got the following:
+```
+Compiling 2 source files to /home/aitor/projects/sedona3D/common/target/classes at 1720596047114
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3DRDD.scala:7: error: not found: object Point3DFormatMapper
+[ERROR] import Point3DFormatMapper.Point3DFormatMapper._
+[ERROR]        ^
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3DRDD.scala:30: error: not found: value Point3DFormatMapper
+[ERROR]   val Point3D = Point3DFormatMapper(0, FileSplitter, Point3Dcsv)
+[ERROR]                 ^
+[ERROR] two errors found
+```
+So I try to change the import syntax. But it doesn't change anything.
+You should go into your pom.xml and check in the `<\build>` if the path are corrects.
+You can add a build. Copy and paste a build topic and add the path you want. Try and retry
+until you got the right paths messages during compilation.
+
+##Problem whil instantiating a point using `PointFormatMapper`
+When I run this inside `Point3DRDD.scala`
+```
+val Point3D = Point3DFormatMapper(0, FileSplitter, true)
+```
+It raises me the following error:
+```
+ error: class FormatMapper.Point3DFormatMapper is not a value
+```
+Yes, it's an object but how could I instantiate a point so ?
+The solution was `new` because it's an object so you must create
+a new instance by using the key-word `new`.
+To avoid problems while importing, take care of the difference
+between the package you're calling, the class/object and the method.
+They probably have similar names, but still different names. Confusing
+may raise errors.
+
+## Argument for call
+I defined the map to use inside a spatial RDD I created thanks to:
+```
+val point3DRDD = new SpatialRDD[Geometry]
+point3DRDD.rawSpatialRDD = point3Dcsv.mapPartitions(point3DFormatMapper.call)
+```
+Consequently, I got the error above:
+```
+/home/aitor/projects/sedona3D/common/src/main/scala/Point3DRDD.scala:35: error: missing argument list for method call in class FormatMapper
+[ERROR] Unapplied methods are only converted to functions when a function type is expected.
+[ERROR] You can make this conversion explicit by writing `call _` or `call(_)` instead of `call`.
+[ERROR]   point3DRDD.rawSpatialRDD = point3Dcsv.mapPartitions(point3DFormatMapper.call)
+```
+
