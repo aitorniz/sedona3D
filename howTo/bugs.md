@@ -365,4 +365,32 @@ Consequently, I got the error above:
 [ERROR] You can make this conversion explicit by writing `call _` or `call(_)` instead of `call`.
 [ERROR]   point3DRDD.rawSpatialRDD = point3Dcsv.mapPartitions(point3DFormatMapper.call)
 ```
+After modifying `call` to `call(_)` It raised the following error:
+```
+Compiling 4 source files to /home/aitor/projects/sedona3D/common/target/classes at 1720604584858
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/scala/Point3DRDD.scala:35: error: overloaded method value mapPartitions with alternatives:
+[ERROR]   [U](f: org.apache.spark.api.java.function.MapPartitionsFunction[org.apache.spark.sql.Row,U], encoder: org.apache.spark.sql.Encoder[U])org.apache.spark.sql.Dataset[U] <and>
+[ERROR]   [U](func: Iterator[org.apache.spark.sql.Row] => Iterator[U])(implicit evidence$7: org.apache.spark.sql.Encoder[U])org.apache.spark.sql.Dataset[U]
+[ERROR]  cannot be applied to (java.util.Iterator[String] => java.util.Iterator[_ <: org.locationtech.jts.geom.Geometry])
+[ERROR]   point3DRDD.rawSpatialRDD = point3Dcsv.mapPartitions(point3DFormatMapper.call(\_))
+```
+It just mean that I'm trying to iterate over Geometry object with a iterator which is designed for sql rows. Everything is ok.
+
+After modiyfing `Point3DFormatMapper` in order to import correctly GeometryType3D (I wrote GeometryType3D.GeometryType3D) I got:
+```
+Compilation failure: 
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/java/org/apache/sedona/common/enums/GeometryType3D.java:[27,30] cannot find symbol
+[ERROR]   symbol:   variable GeometryType
+[ERROR]   location: class GeometryType3D.GeometryType3D
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/java/org/apache/sedona/core/formatMapper/Point3DFormatMapper.java:[16,13] no suitable constructor found for PointFormatMapper(int,int,org.apache.sedona.common.enums.FileDataSplitter,boolean,GeometryType3D.GeometryType3D)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.PointFormatMapper(org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+[ERROR] /home/aitor/projects/sedona3D/common/src/main/java/org/apache/sedona/core/formatMapper/Point3DFormatMapper.java:[27,13] no suitable constructor found for PointFormatMapper(java.lang.Integer,int,org.apache.sedona.common.enums.FileDataSplitter,boolean,GeometryType3D.GeometryType3D)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.PointFormatMapper(org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+[ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
+[ERROR]       (actual and formal argument lists differ in length)
+```
 
