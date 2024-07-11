@@ -25,16 +25,17 @@ x,y,z,ID
 It creates a DataFrame of 3D points (`ST_PointZ`), and performs a distance computation with a center `(0, 0, 10)`: 
 
 ```scala
-// Small exercise
+// Define a center
 sedona
-  .sql("SELECT ST_PointZ(0, 0, 10) as center")
-  .createOrReplaceTempView("other")
+  .sql("SELECT ST_PointZ(0, 0, 10) as coordinates")
+  .createOrReplaceTempView("center")
 
+// Compute the distance to the points
 dfPoint3D.createOrReplaceTempView("points")
 var jointDf = sedona.sql("""
-  |SELECT points.point, other.center, points.ID
-  |FROM points, other
-  |WHERE ST_3dDistance(points.point, other.center) < 1
+  |SELECT *
+  |FROM points, center
+  |WHERE ST_3dDistance(points.point, center.coordinates) < 1
 """.stripMargin)
 ```
 

@@ -33,7 +33,10 @@ object Main extends App {
     .csv("./data/testCSV3D.csv")
 
   // Cast in 3D points
-  var dfPoint3D = df.select(ST_PointZ("x", "y", "z").alias("point"), df("ID"))
+  var dfPoint3D = df.select(
+    ST_PointZ("x", "y", "z").alias("point"), 
+    df("ID")
+  )
 
   // A simple show will hide the Z column
   // TODO: why so?
@@ -43,18 +46,20 @@ object Main extends App {
   // dfPoint3D.select(ST_Z("point")).show()
 
 
-  // Small exercise
+  // Define a center
   sedona
-    .sql("SELECT ST_PointZ(0, 0, 10) as center")
-    .createOrReplaceTempView("other")
+    .sql("SELECT ST_PointZ(0, 0, 10) as coordinates")
+    .createOrReplaceTempView("center")
 
+  // Compute the distance to the points
   dfPoint3D.createOrReplaceTempView("points")
   var jointDf = sedona.sql("""
-    |SELECT points.point, other.center, points.ID
-    |FROM points, other
-    |WHERE ST_3dDistance(points.point, other.center) < 1
+    |SELECT *
+    |FROM points, center
+    |WHERE ST_3dDistance(points.point, center.coordinates) < 1
   """.stripMargin)
 
+  // Show results
   jointDf.select(
     ST_X("point"), 
     ST_Y("point"), 
@@ -62,7 +67,4 @@ object Main extends App {
     df("ID")
   ).show()
 
-
-
-  
 }
