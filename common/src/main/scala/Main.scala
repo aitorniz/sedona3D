@@ -2,10 +2,8 @@
 import org.apache.log4j.{Level, Logger}
 import org.apache.sedona.spark.SedonaContext
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
-import org.apache.spark.sql.SparkSession
 import org.apache.sedona.sql.utils.Adapter
 
-import org.locationtech.jts.geom.Geometry
 import org.apache.spark.sql.sedona_sql.expressions.st_constructors._
 import org.apache.spark.sql.sedona_sql.expressions.st_functions._
 import org.apache.spark.sql.sedona_sql.expressions.st_predicates._
@@ -13,7 +11,7 @@ import org.apache.spark.sql.sedona_sql.expressions.st_aggregates._
 
 
 object Main extends App {
-  Logger.getRootLogger().setLevel(Level.WARN)
+  Logger.getRootLogger().setLevel(Level.INFO)
 
   // Set up the context
   val config = SedonaContext.builder().appName("3D tests")
