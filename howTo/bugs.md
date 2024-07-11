@@ -393,4 +393,21 @@ Compilation failure:
 [ERROR]     constructor org.apache.sedona.core.formatMapper.PointFormatMapper.PointFormatMapper(java.lang.Integer,org.apache.sedona.common.enums.FileDataSplitter,boolean) is not applicable
 [ERROR]       (actual and formal argument lists differ in length)
 ```
+## How to import JavaGeom library ?
+Looking for a way to easily determine how to import a java class.
+In this case is the [JavaGeom](https://github.com/dlegland/javaGeom/blob/master/README.md) library.
 
+I try adding the following dependency inside the `pom.xml`:
+```
+	<dependency>
+            <groupId>fr.lgi2p</groupId>
+            <artifactId>javaGeom</artifactId>
+            <version>0.4.3</version>
+        </dependency>
+```
+And got the following:
+```
+Failed to execute goal on project customExample3D: Could not resolve dependencies for project 
+org.apache.sedona:customExample3D:jar:1.0.0: 
+Could not find artifact fr.lgi2p:javaGeom:jar:0.4.3 in maven-central (https://repo.maven.apache.org/maven2/)
+```
