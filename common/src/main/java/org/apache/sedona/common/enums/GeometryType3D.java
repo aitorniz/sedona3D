@@ -7,7 +7,7 @@ import java.io.Serializable;
 /** The Enum GeometryType. */
 public enum GeometryType3D implements Serializable {
   POINT,
-  POINT3D,
+  Point3D,
   POLYGON,
   LINESTRING,
   MULTIPOINT,
