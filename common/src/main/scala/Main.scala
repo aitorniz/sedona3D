@@ -3,6 +3,8 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.sedona.spark.SedonaContext
 import org.apache.sedona.viz.core.Serde.SedonaVizKryoRegistrator
 import org.apache.sedona.sql.utils.Adapter
+import org.apache.sedona.core.enums.GridType3D
+import org.apache.sedona.core.enums.IndexType3D
 
 import org.apache.spark.sql.sedona_sql.expressions.st_constructors._
 import org.apache.spark.sql.sedona_sql.expressions.st_functions._
@@ -29,6 +31,13 @@ object Main extends App {
     .option("delimiter", ",")
     .option("header", "true")
     .csv("./data/testCSV3D.csv")
+ 
+  //make the spatial partitionning
+  val test3Drdd = Adapter.toSpatialRdd(df)
+  test3Drdd.spatialPartitioning(GridType3D.KDBTREE)
+  test3Drdd.buildIndex(IndexType3D.OCTTREE, true)
+  test3Drdd.indexedRDD = test3Drdd.indexedRDD.cache()
+  //NB: cache() is a shorthand for .persist(StorageLevel.MEMORY_ONLY). It tells Spark to store the RDD in memory.
 
   // Cast in 3D points
   var dfPoint3D = df.select(
