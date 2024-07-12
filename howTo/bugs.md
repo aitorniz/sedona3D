@@ -411,3 +411,28 @@ Failed to execute goal on project customExample3D: Could not resolve dependencie
 org.apache.sedona:customExample3D:jar:1.0.0: 
 Could not find artifact fr.lgi2p:javaGeom:jar:0.4.3 in maven-central (https://repo.maven.apache.org/maven2/)
 ```
+### Problem while using spatialPartitionning
+I'm working on a 3D partitionner based on sedona's 2D partitionner. 
+I modified a code to read and partition some 3D points. I got the following error:
+```
+Compiling 3 source files to /workspace/target/classes at 1720775620615
+[ERROR] /workspace/src/main/scala/Main.scala:37: error: value spatialPartitioning is not a member of org.apache.spark.rdd.RDD[org.apache.spark.sql.Row]
+[ERROR]   test3Drdd.spatialPartitioning(GridType3D.KDBTREE)
+[ERROR]             ^
+[ERROR] /workspace/src/main/scala/Main.scala:38: error: value buildIndex is not a member of org.apache.spark.rdd.RDD[org.apache.spark.sql.Row]
+[ERROR]   test3Drdd.buildIndex(IndexType3D.OCTTREE, true)
+[ERROR]             ^
+[ERROR] /workspace/src/main/scala/Main.scala:39: error: value indexedRDD is not a member of org.apache.spark.rdd.RDD[org.apache.spark.sql.Row]
+[ERROR]   test3Drdd.indexedRDD = test3Drdd.indexedRDD.cache()
+```
+Then I try to use Adapter.toSpatialRDD as an alternative to `.rdd` and it raised the following:
+```
+Compiling 3 source files to /workspace/target/classes at 1720777110942
+[ERROR] /workspace/src/main/scala/Main.scala:36: error: overloaded method value toSpatialRdd with alternatives:
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryColId: Int)org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry] <and>
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryColId: Int,fieldNames: Seq[String])org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry] <and>
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryFieldName: String,fieldNames: Seq[String])org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry] <and>
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryFieldName: String)org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry]
+[ERROR]  cannot be applied to (org.apache.spark.sql.DataFrame)
+[ERROR]   val test3Drdd = Adapter.toSpatialRdd(df)
+```
