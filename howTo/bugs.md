@@ -510,4 +510,52 @@ First of all, I got this:
 ```
 /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialRDD/SpatialRDD.java:[30,57] package org.apache.sedona.core.spatialPartitioning.octree does not exist
 ```
+Inside `SpatialRDD` there was a misstake in the octtree import which was written as `octree` with only one t.
+
+After that, I got this:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialPartitioning/octtree/StandardOctTree.java:[43,19] cannot find symbol
+[ERROR]   symbol:   class List
+[ERROR]   location: class org.apache.sedona.core.spatialPartitioning.octtree.StandardOctTree<T>
+```
+After asking to chatGPT, I added both `ArrayList` and `List` imports 
+from the Java.util class:
+```
+import java.util.List;
+import java.util.ArraList;
+```
+It works even it don't explain why this works in the original code without being imported.
+Now, we have this bug to fix:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialPartitioning/octtree/StandardOctTree.java:[56,28] cannot find symbol
+[ERROR]   symbol:   class OctRectangle
+[ERROR]   location: class org.apache.sedona.core.spatialPartitioning.octtree.StandardOctTree<T>
+```
+This is easy. It's just a misstake in `OctRectangle` which is `OctBox`.
+
+### cannot find symbol class Visitor
+After that, we have the next bug:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialPartitioning/octtree/StandardOctTree.java:[270,27] cannot find symbol
+[ERROR]   symbol:   class Visitor
+[ERROR]   location: class org.apache.sedona.core.spatialPartitioning.octtree.StandardOctTree<T>
+```
+`Visitor` was defined in another class. Let's verify it and import it if it's true.
+Visitor is a Java design pattern used to apply many different methods to a objects without modifying it.
+
+### Cannot find symbol OctBox
+I got this error:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialPartitioning/OcttreePartitioning.java:[22,59] cannot find symbol
+[ERROR]   symbol:   class OctBox
+[ERROR]   location: package org.apache.sedona.core.spatialPartitioning.quadtree
+```
+Because of a misstake in the OctBox import. I put `quadtree` instead of `octtree`.
+Now, I got another syntax error with:
+```
+ /home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialPartitioning/OctTreePartitioner.java:[24,59] cannot find symbol
+[ERROR]   symbol:   class StandardOctTree
+[ERROR]   location: package org.apache.sedona.core.spatialPartitioning.quadtree
+```
+I wrote `quadtree` instead of `octtree`. Now it's fixed.
 
