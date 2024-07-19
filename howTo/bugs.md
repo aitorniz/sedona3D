@@ -559,3 +559,20 @@ Now, I got another syntax error with:
 ```
 I wrote `quadtree` instead of `octtree`. Now it's fixed.
 
+### ReferencedEnvelope3D imported in the wrong way
+In order to fix it, the good import syntax is the following:
+```
+import org.geotools.geometry.jts.ReferencedEnvelope3D;
+```
+### Wrong syntax again
+```
+ /home/aitor/projects/sedonaCodeSource/spark/common/src/main/scala/org/apache/sedona/viz/showcase/ScalaExample.scala:196: error: value boundaryEnvelope is not a member of org.apache.sedona.core.spatialRDD.PointRDD
+```
+Replace boundaryEnvelope with boundaryEnvelope3D
+
+
+## Compile example using modified sources
+I want to compile an example which import modified sedona classes. So,
+I looked for the path of code to compile in `pom.xml`in line 527.
+It looks like the `</scope>` which is the way to process the code (compile, test, runtime and so on). And this parameter could be changed onto `provided` in order to give the modified source code for the compilation of the example. Now, in th example's `pom.xml` this parameter is a a reference thanks to `${sedona.scope}`. So there must be another file in what it is defined or another way to change this parameter.
+Another possibility will be `</artefactID>`as we modified this parameter in our example and it changed the printed name at the start of the compilation.
