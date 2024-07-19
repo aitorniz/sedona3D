@@ -436,3 +436,78 @@ Compiling 3 source files to /workspace/target/classes at 1720777110942
 [ERROR]  cannot be applied to (org.apache.spark.sql.DataFrame)
 [ERROR]   val test3Drdd = Adapter.toSpatialRdd(df)
 ```
+Then I tried with `.collect()` and it needs sparkcontext.
+Finally, `toJavaRDD` works but raising th following:
+```
+Compiling 3 source files to /workspace/target/classes at 1720777741486
+[ERROR] /workspace/src/main/scala/Main.scala:38: error: value spatialPartitioning is not a member of org.apache.spark.api.java.JavaRDD[org.apache.spark.sql.Row]
+[ERROR]   test3Drdd.spatialPartitioning(GridType3D.KDBTREE)
+[ERROR]             ^
+[ERROR] /workspace/src/main/scala/Main.scala:39: error: value buildIndex is not a member of org.apache.spark.api.java.JavaRDD[org.apache.spark.sql.Row]
+[ERROR]   test3Drdd.buildIndex(IndexType3D.OCTTREE, true)
+[ERROR]             ^
+[ERROR] /workspace/src/main/scala/Main.scala:40: error: value indexedRDD is not a member of org.apache.spark.api.java.JavaRDD[org.apache.spark.sql.Row]
+[ERROR]   test3Drdd.indexedRDD = test3Drdd.indexedRDD.cache()
+```
+After modifying the line who build the RDD this way:
+```
+val test3Drdd = Adapter.toSpatialRdd(sedona.sql("select df (\_c0,\_c1,\_c2) as X, Y, Z limit 2"))
+```
+I got the following error:
+```
+Compiling 3 source files to /workspace/target/classes at 1721027167619
+[ERROR] /workspace/src/main/scala/Main.scala:36: error: overloaded method value toSpatialRdd with alternatives:
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryColId: Int)org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry] <and>
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryColId: Int,fieldNames: Seq[String])org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry] <and>
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryFieldName: String,fieldNames: Seq[String])org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry] <and>
+[ERROR]   (dataFrame: org.apache.spark.sql.DataFrame,geometryFieldName: String)org.apache.sedona.core.spatialRDD.SpatialRDD[org.locationtech.jts.geom.Geometry]
+[ERROR]  cannot be applied to (org.apache.spark.sql.DataFrame)
+[ERROR]   val test3Drdd = Adapter.toSpatialRdd(sedona.sql("select df (\_c0, \_c1,\_c2) as X, Y, Z limit 2"))
+```
+Then, I got an error because inside the Dockerfile I installed `open-java-jre-headless` that is a jre without compiler.
+
+```
+```
+/workspace/src/main/scala/Main.scala:44: error: overloaded method value spatialPartitioning with alternatives:
+[ERROR]   (x$1: org.apache.sedona.core.spatialPartitioning.quadtree.StandardQuadTree[\_])Boolean <and>
+[ERROR]   (x$1: java.util.List[org.locationtech.jts.geom.Envelope])Boolean <and>
+[ERROR]   (x$1: org.apache.sedona.core.spatialPartitioning.SpatialPartitioner)Unit <and>
+[ERROR]   (x$1: org.apache.sedona.core.enums.GridType)Boolean
+[ERROR]  cannot be applied to (org.apache.sedona.core.enums.GridType3D)
+[ERROR]   test3Drdd.spatialPartitioning(GridType3D.KDBTREE)
+```
+## "Orphan case here"
+It seems like a very tricky error. I started by reviewing all the files i created for 3D partitionning.
+But the error was easier and [this article](https://stackoverflow.com/questions/23887097/orphaned-case-error-in-a-switch-statments) helped me a lot. You just need to check that you closed
+all your brackets.
+
+##Make a 3D partitionner
+### Recreate quadtree-like architecture
+FIrst of all, I copy all this architecture:
+```
+|-QuadTreePartitioner.java
+|-QuadTreePartitioning.java
+|-quadtree/
+          |-QuadNode.java
+          |-QuadRectangle.java
+          |-StandardQuadTree.java
+```
+With the following architecture:
+```
+|-OctTreePartitioner.java
+|-OctTreePartitioning.java
+|-octtree/
+          |-OctNode.java
+          |-OctRectangle.java
+          |-StandardOctTree.java
+```
+And inside the files, I replaced any "quad" with "oct" and add a Z or depth where it was necessary.
+Also, I mentionned that there are modifications to make inside the Envelope class which is highly used by
+the quadtree.
+
+Therefore, I ran all this and got several bugs that I will fix step by step.
+First of all, I got this:
+```
+/home/aitor/projects/sedonaCodeSource/spark/common/src/main/java/org/apache/sedona/core/spatialRDD/SpatialRDD.java:[30,57] package org.apache.sedona.core.spatialPartitioning.octree does not exist
+```
+
