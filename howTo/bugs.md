@@ -575,4 +575,131 @@ Replace boundaryEnvelope with boundaryEnvelope3D
 I want to compile an example which import modified sedona classes. So,
 I looked for the path of code to compile in `pom.xml`in line 527.
 It looks like the `</scope>` which is the way to process the code (compile, test, runtime and so on). And this parameter could be changed onto `provided` in order to give the modified source code for the compilation of the example. Now, in th example's `pom.xml` this parameter is a a reference thanks to `${sedona.scope}`. So there must be another file in what it is defined or another way to change this parameter.
-Another possibility will be `</artefactID>`as we modified this parameter in our example and it changed the printed name at the start of the compilation.
+Another possibility will be `</artefactID>`as we modified this 
+parameter in our example and it changed the printed name at the start 
+of the compilation.
+
+Therefore, we have the next bug:
+```
+/workspace/spark/common/src/main/java/org/apache/sedona/core/
+spatialRDD/SpatialRDD.java:[217,60] incompatible types: 
+org.locationtech.jts.geom.Envelope cannot be converted to 
+org.geotools.geometry.jts.ReferencedEnvelope3D
+```
+Once the file opened, it has to be the getEnvelopeInternal() method 
+applied to geometry which try to make an impossible convertion.
+
+###Recreate a git repo with sedona
+My sedonaCodeSource repo was corrupted. So, I created a new repo
+in my computer, copy and paste thanks to the GUI the files. And
+manage the exception. The exception was `Permission denied`. So
+I used `sudo`. And finally I got the same errors as the initial
+situation and could continue fixing them.
+The exceptions were the following:
+```
+/home/aitor/projects/sedonaCodeSource/target/maven-shared-archive-resources: Permission denied
+
+ /home/aitor/projects/sedonaCodeSource/target/.plxarc: Permission denied
+
+/home/aitor/projects/sedonaCodeSource/target/resolved-pom.xml: Permission denied
+```
+### How to switch a git repo from https to ssh
+1. Open a terminal on this repo \n
+2. Delete the https link between remote and local
+```
+git remote rm origin
+```
+3. Add a ssh connexion process
+```
+git remote add origin git@github.com:user/repo.git
+```
+4. See remote repo's updates without removing your work
+
+```
+git fetch origin branchName
+```
+### How to check size of files when you get 
+`No space left on device`
+Fist, type this:
+```
+du -d 1 -h .
+```
+In order to get informations about where is the big thing
+which take all your memory.
+Also type the following to remove temporary docker things:
+```
+docker system prune
+```
+### How to fix test bug about knn algo
+I got the following:
+```
+Failed tests:
+  ShapefileReaderTest.testLoadDbfFile:283 
+  expected:<...0000US72087	72087	Lo[??]za	
+  13	50159459	11975...> 
+  but was:<...0000US72087	72087	Lo[??]za	
+  13	50159459	11975...>
+  PointKnnTest.testSpatialKNNCorrectness:192 null
+```
+In the same error message, there was also this:
+```
+FAILURE! - in org.apache.sedona.core.formatMapper.shapefileParser.shapes.ShapefileReaderTest
+testLoadDbfFile(org.apache.sedona.core.formatMapper.shapefileParser.shapes.ShapefileReaderTest)  Time elapsed: 0.39 sec  <<< FAILURE!
+org.junit.ComparisonFailure: expected:<...0000US72087	72087	Lo[??]za13	50159459	11975...> but was:<...0000US72087	72087	Lo[??]za	13	50159459	11975...>
+	at org.junit.Assert.assertEquals(Assert.java:117)
+	at org.junit.Assert.assertEquals(Assert.java:146)
+	at org.apache.sedona.core.formatMapper.shapefileParser.shapes.ShapefileReaderTest.testLoadDbfFile(ShapefileReaderTest.java:283)
+```
+### How to look for a word into Vim
+To make a simple search, press `Esc` and then:
+```
+/wordImLookingFor
+```
+For a whole word, type:
+```
+/\<wordImLookingFor\>
+```
+### How to fix "unable ro resolve ssh port"
+While trying to copy and paste my modification from my computer
+to the almalinux virtual machine, I got the following:
+
+### How to fix "unable ro resolve ssh port"
+While trying to copy and paste my modification from my computer
+to the almalinux virtual machine, I got the following:
+```
+scp aitor@oracle:/projects/sedona/spark/common/src/main/java/
+org/apache/sedona/core/spatialRDD/ 
+almalinux@dev-sedona:sedona-laurent/spark/common/src/main/java/
+org/apache/sedona/core/spatialRDDssh: 
+connect to host oracle port 22: Connection refused
+ssh: Could not resolve hostname dev-sedona: Temporary failure 
+in name resolution
+```
+Then, I used [this](https://www.howtouselinux.com/post/fix-ssh-connect-to-host-port-22-connection-refused)
+
+### How to create a ssh key for git hub
+I used [this](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+But [this](https://stackoverflow.com/questions/24392657/adding-an-rsa-key-without-overwriting) helped so much.
+
+1. Generate new one
+```
+ssh-keygen -t rsa
+```
+2. Do not overwrite existing key
+3. Create a `config` file to manage both keys
+```
+Host * (asterisk for all hosts or add specific host)
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile <key> (e.g. ~/.ssh/yourKey)
+```
+NB: you can use many keys with the following example:
+```
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_rsa_private_server
+  IdentityFile ~/.ssh/id_rsa_github
+  IdentityFile ~/.ssh/id_rsa_work_server
+```
+
