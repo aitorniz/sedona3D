@@ -415,7 +415,6 @@ Could not find artifact fr.lgi2p:javaGeom:jar:0.4.3 in maven-central (https://re
 I'm working on a 3D partitionner based on sedona's 2D partitionner. 
 I modified a code to read and partition some 3D points. I got the following error:
 ```
-```
 Compiling 3 source files to /workspace/target/classes at 1720775620615
 [ERROR] /workspace/src/main/scala/Main.scala:37: error: value spatialPartitioning is not a member of org.apache.spark.rdd.RDD[org.apache.spark.sql.Row]
 [ERROR]   test3Drdd.spatialPartitioning(GridType3D.KDBTREE)
@@ -467,7 +466,6 @@ Compiling 3 source files to /workspace/target/classes at 1721027167619
 ```
 Then, I got an error because inside the Dockerfile I installed `open-java-jre-headless` that is a jre without compiler.
 
-```
 ```
 /workspace/src/main/scala/Main.scala:44: error: overloaded method value spatialPartitioning with alternatives:
 [ERROR]   (x$1: org.apache.sedona.core.spatialPartitioning.quadtree.StandardQuadTree[\_])Boolean <and>
