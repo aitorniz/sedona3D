@@ -255,7 +255,7 @@ public class Point3DFormatMapper extends PointFormatMapper{
 In order to test them, I made few hypothesis. One of them was to install the modified version of Sedona in my computer.
 Thanks to this, the example will probably call it. But how I could do that?
 ```
-
+```
 
 ## Unable to clean class directory
 After writting a basic code to inherite sedona, modify it and test it, I got the following error:
@@ -414,6 +414,7 @@ Could not find artifact fr.lgi2p:javaGeom:jar:0.4.3 in maven-central (https://re
 ### Problem while using spatialPartitionning
 I'm working on a 3D partitionner based on sedona's 2D partitionner. 
 I modified a code to read and partition some 3D points. I got the following error:
+```
 ```
 Compiling 3 source files to /workspace/target/classes at 1720775620615
 [ERROR] /workspace/src/main/scala/Main.scala:37: error: value spatialPartitioning is not a member of org.apache.spark.rdd.RDD[org.apache.spark.sql.Row]
@@ -701,5 +702,19 @@ Host *
   IdentityFile ~/.ssh/id_rsa_private_server
   IdentityFile ~/.ssh/id_rsa_github
   IdentityFile ~/.ssh/id_rsa_work_server
+```
+
+bug:
+```
+Cloning into 'sedona'...
+git@github.com: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+```
+### ssh config error
+```
+Could not open a connection to your authentication agent.
 ```
 
