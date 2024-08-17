@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 	gnupg1\
 	wget \
 	tar \
-	openjdk-8-jre-headless\
+	openjdk-8-jdk\
 	maven
 	
 
