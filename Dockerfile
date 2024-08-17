@@ -1,3 +1,4 @@
+
 FROM ubuntu:22.04
 
 ENV HOME /root
@@ -36,5 +37,3 @@ ENV MAVEN_HOME=$HOME/projects/boussole/apache-maven-3.9.8-bin
 ENV SPARK_HOME=$HOME/projects/boussole/spark-3.4.3-bin-hadoop3
 ENV PATH=$PATH:$SPARK_HOME
 ENV PYTHONPATH=$PYTHONPATH:$SPARK_HOME/python
-
-
